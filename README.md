@@ -7,7 +7,8 @@ install:
 `pipenv install`
 
 Usage:
-```python retrolover.py --help                                                   
+```
+python retrolover.py --help                                                   
 usage: retrolover.py [-h] [--console {snes,nes,gba,gbc,gb,genesis}]
                      [--romsdir ROMSDIR]
                      query [query ...]
