@@ -8,8 +8,8 @@ name = "pypi"
 [packages]
 
 requests = "*"
-click = "*"
 "beautifulsoup4" = "*"
+pyjsparser = "*"
 
 
 [dev-packages]
