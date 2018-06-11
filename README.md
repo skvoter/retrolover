@@ -3,14 +3,12 @@ Command-line simple Loveroms.com ROM automatic downloader
 
 install:
 
-`git clone https://github.com/skvoter/retrolover`
-
-`pipenv install`
+`pip install retrolover`
 
 Usage:
 ```
-python retrolover.py --help                                                   
-usage: retrolover.py [-h] [--console {snes,nes,gba,gbc,gb,genesis}]
+retrolover --help                                                   
+usage: retrolover [-h] [--console {snes,nes,gba,gbc,gb,genesis}]
                      [--romsdir ROMSDIR]
                      query [query ...]
 
@@ -28,7 +26,5 @@ optional arguments:
 ```
 
 TODO:
-- add to pip
-- make setup.py script
-- make it independent package
 - add more consoles
+- add ddos cloudflare check bypass

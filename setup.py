@@ -25,7 +25,7 @@ setup(name='retrolover',
           'requests'
       ],
       entry_points={
-          'console_scripts': ['retrolover=retrolover:main'],
+          'console_scripts': ['retrolover=retrolover.retrolover:main'],
       },
       include_package_data=True,
       zip_safe=False)
