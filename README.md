@@ -6,7 +6,8 @@ install:
 `pip install retrolover`
 
 Usage:
-`retrolover --console snes Castlevania`
+
+Example:`retrolover --console snes Castlevania`
 
 
 ```
