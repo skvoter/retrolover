@@ -1,3 +1,4 @@
+import os
 import io
 import re
 import argparse
@@ -121,7 +122,7 @@ def main():
     parser = argparse.ArgumentParser(description='Retro consoles ROM Downloader')
     parser.add_argument('query', type=str, nargs='+', help='search query')
     parser.add_argument('--console', choices=CONSOLES, help='console')
-    parser.add_argument('--romsdir', '-r', default='/home/skvoter/roms', help='roms directory')
+    parser.add_argument('--romsdir', '-r', default='/home/{}/roms'.format(os.getenv('USER')), help='roms directory')
     args = parser.parse_args()
     for query in args.query:
         url = build_url(args, query, 1)
