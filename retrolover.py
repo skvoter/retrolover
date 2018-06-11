@@ -18,6 +18,14 @@ CONSOLES_URL_MAP = {
     'gb': 'gameboy',
     'genesis': 'sega-genesis'
 }
+CONSOLES_DESCRIPTION_MAP = {
+    'Super Nintendo': 'snes',
+    'Nintendo':'nes',
+    'Gameboy Advance': 'gba',
+    'Gameboy Color': 'gbc',
+    'Gameboy': 'gb',
+    'Sega Genesis': 'genesis',
+}
 CONFIRMATION_INPUT = ['y', 'Y', 'n', 'N', 'yes', 'Yes', 'No', 'no']
 
 
@@ -65,6 +73,7 @@ def get_rom_list(url):
                 rom['name'] += '[{}] '.format(span['class'][1])
         rom['name'] += spans[-1].text
         rom['details'] = [text for text in subset[1].a.text.split('\n') if (spans[-1].text not in text and len(text)!=0)]
+        rom['console'] = rom['details'][0].split(':')[1].strip()
         rom['details'] = '\n'.join(rom['details'])
         rom['rating'] = subset[2].span.text
         rom['views'] = subset[3].span.text
@@ -72,11 +81,15 @@ def get_rom_list(url):
     return roms
 
 
-def download_and_extract(link, args):
+def download_and_extract(link, args, rom):
     r = requests.get(link)
     z = zipfile.ZipFile(io.BytesIO(r.content))
     if args.console:
         path = args.romsdir + '/' + args.console
+    elif rom:
+        path = args.romsdir + '/' + CONSOLES_DESCRIPTION_MAP[rom['console']]
+    else:
+        path = args.romsdir
     z.extractall(path)
 
 
@@ -155,7 +168,7 @@ def main():
                         while not (page in [str(rom['number']) for rom in romlist[1:]]) and not (re.match('p\d+$', page) and int(page.split('p')[1]) <= int(romlist[0]['last_page']) and int(page.split('p')[1]) >= 1):
                             page = input('\n> Please, select the ROM you need (just number), or enter page number as pN: ')
             link = get_download_link(romlist[int(page)]['link'])
-        download_and_extract(link, args)
+        download_and_extract(link, args, romlist[int(page)])
 
 
 main()
