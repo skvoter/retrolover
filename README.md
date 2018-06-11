@@ -7,8 +7,7 @@ install:
 
 Usage:
 
-Example:
-`retrolover --console snes Castlevania`
+`example: retrolover --console snes Castlevania`
 
 
 ```
