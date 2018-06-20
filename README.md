@@ -6,6 +6,10 @@ install:
 `pip install retrolover`
 
 Usage:
+
+`~ retrolover --console snes Castlevania`
+
+
 ```
 retrolover --help                                                   
 usage: retrolover [-h] [--console {snes,nes,gba,gbc,gb,genesis}]
