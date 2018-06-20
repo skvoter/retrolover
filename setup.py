@@ -7,7 +7,7 @@ def readme():
 
 
 setup(name='retrolover',
-      version='1.0.0',
+      version='1.0.1',
       description='Tool for downloading ROMS for your retropie',
       python_requires='>=3',
       long_description=readme(),

@@ -112,9 +112,7 @@ def printinfo(romlist):
 def get_download_link(romlink):
     r = requests.get(romlink)
     newsoup = BeautifulSoup(r.text, "html.parser")
-    script = newsoup.select('#download-zone')[0].find_all('script')[2].text
-    p = PyJsParser()
-    link = p.parse(script)['body'][2]['expression']['right']['value']
+    link = newsoup.select('#download_link')[0]['href']
     return link
 
 
