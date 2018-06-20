@@ -9,7 +9,6 @@ name = "pypi"
 
 requests = "*"
 "beautifulsoup4" = "*"
-pyjsparser = "*"
 selenium = "*"
 
 

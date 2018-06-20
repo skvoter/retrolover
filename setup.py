@@ -21,7 +21,6 @@ setup(name='retrolover',
       packages=['retrolover'],
       install_requires=[
           'beautifulsoup4',
-          'pyjsparser',
           'requests'
       ],
       entry_points={
