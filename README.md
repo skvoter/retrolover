@@ -1,6 +1,8 @@
 # retrolover
 Command-line simple Loveroms.com ROM automatic downloader
 
+## Disclaimer: Loveroms has been shut down so that this tool does not work anymore 
+
 install:
 
 `pip install retrolover`
