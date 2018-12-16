@@ -7,6 +7,5 @@ name = "pypi"
 requests = "*"
 "beautifulsoup4" = "*"
 selenium = "*"
-pyjsparser = "*"
 
 [dev-packages]

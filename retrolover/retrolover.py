@@ -5,7 +5,6 @@ import argparse
 import requests
 import zipfile
 
-from pyjsparser import PyJsParser
 from urllib.parse import urlencode, urlparse, parse_qs
 from bs4 import BeautifulSoup
 
