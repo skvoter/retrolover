@@ -5,7 +5,6 @@ import argparse
 import requests
 import zipfile
 
-from pyjsparser import PyJsParser
 from urllib.parse import urlencode, urlparse, parse_qs
 from bs4 import BeautifulSoup
 
@@ -34,23 +33,25 @@ def build_url(args, query, page):
     '''
     Build request url
     '''
-    url = 'https://www.loveroms.com/roms/'
+    url = 'https://romsmania.cc/roms/'
     if args.console:
-        url += CONSOLES_URL_MAP[args.console]+'/'
-    params = {'q': query, 'page': page, 'order':'downloads'}
+        url += CONSOLES_URL_MAP[args.console]+'/search'
+    else:
+        url += 'search/table'
+    params = {'name': query, 'orderAsc':0, 'page': page, 'order':'downloads'}
     url += '?'+urlencode(params)
+    print(url)
     return url
 
 
-def get_rom_list(url):
+def get_rom_list(url, args):
     '''
     Parse page, get rom list and build dict with needed data
     '''
     r = requests.get(url)
     soup = BeautifulSoup(r.text, "html.parser")
-    romset = soup.select('#view-full')[0].find_all('tr')[1:]
-    if len(romset) == 1:
-        if 'Sorry, No ROMs Found :(' in romset[0].text:
+    romset = soup.select('table')[0].find_all('tr')[1:]
+    if len(romset) == 0:
             return None
     roms = []
     roms.append({})
@@ -60,24 +61,25 @@ def get_rom_list(url):
     if len(paginator) == 0:
         roms[0]['last_page'] = '1'
     else:
-        lastpage = paginator[0].find_all('a')[-1]['href']
-        roms[0]['last_page'] = parse_qs(urlparse(lastpage).query)['page'][0]
+        if paginator[0].find_all('a')[-1].text.strip() == 'Next':
+            lastpage = paginator[0].find_all('a')[-2].text.strip()
+        else:
+            lastpage = paginator[0].find_all('a')[-1].text.strip()
+        roms[0]['last_page'] = lastpage
     for source in romset:
         subset = source.find_all('td')
         rom = {}
         rom['number'] = romset.index(source)+1
-        rom['link'] = 'https://www.loveroms.com'+subset[0].a['href']
-        spans = subset[1].a.find_all('span')
-        rom['name'] = ''
-        for span in spans:
-            if 'class' in span.attrs and 'flags' in span['class']:
-                rom['name'] += '[{}] '.format(span['class'][1])
-        rom['name'] += spans[-1].text
-        rom['details'] = [text for text in subset[1].a.text.split('\n') if (spans[-1].text not in text and len(text)!=0)]
-        rom['console'] = rom['details'][0].split(':')[1].strip()
-        rom['details'] = '\n'.join(rom['details'])
-        rom['rating'] = subset[2].span.text
-        rom['views'] = subset[3].span.text
+        rom['link'] = subset[0].a['href']
+        rom['link'] = rom['link'][:20] + '/download' + rom['link'][20:]
+        rom['name'] = subset[0].a.text
+        if args.console:
+            rom['rating'] = subset[1].text
+            rom['downloads'] = subset[2].text
+        else:
+            rom['console'] = subset[1].text
+            rom['rating'] = subset[2].text
+            rom['downloads'] = subset[3].text
         roms.append(rom)
     return roms
 
@@ -92,6 +94,8 @@ def download_and_extract(link, args, rom):
     else:
         path = args.romsdir
     z.extractall(path)
+    for f in z.namelist():
+        print("Extracted: " + path + '/' + f)
 
 
 
@@ -100,19 +104,28 @@ def printinfo(romlist):
     Print ROM list for selection
     '''
     offset = max([len(rom['name']) for rom in romlist[1:]])+1
-    print('№  ' + 'Title'+' '*(offset-len('Title')) +'Rating' + ' '*3 + 'Views')
-    for rom in romlist[1:]:
-        print(str(rom['number'])+ ' '*(3-len(str(rom['number']))) + rom['name'] + ' '*(offset-len(rom['name'])) + rom['rating'] +' '*6 +  rom['views'])
-        print()
-        print(rom['details'])
-        print('-'*offset)
+    if 'console' in romlist[1]:
+        print('№  ' + 'Title'+' '*(offset-len('Title')) + 'Console' + 5*' ' +'Rating' + ' '*3 + 'Downloads')
+        for rom in romlist[1:]:
+            print(str(rom['number'])+ ' '*(3-len(str(rom['number']))) + rom['name']
+                  + ' '*(offset-len(rom['name'])) + rom['console'] + 5*' ' +  rom['rating'] +' '*6 + rom['downloads'])
+            print()
+            print('-'*offset)
+    else:
+        print('№  ' + 'Title'+' '*(offset-len('Title')) +'Rating' + ' '*3 + 'Views')
+        for rom in romlist[1:]:
+            print(str(rom['number'])+ ' '*(3-len(str(rom['number']))) + rom['name']
+                  + ' '*(offset-len(rom['name'])) + rom['rating'] +' '*6 +
+                rom['downloads'])
+            print()
+            print('-'*offset)
     print('Page {} of {}'.format(romlist[0]['current_page'], romlist[0]['last_page']))
 
 
 def get_download_link(romlink):
     r = requests.get(romlink)
     newsoup = BeautifulSoup(r.text, "html.parser")
-    link = newsoup.select('#download_link')[0]['href']
+    link = newsoup.select('.wait__link')[0]['href']
     return link
 
 
@@ -124,7 +137,7 @@ def main():
     args = parser.parse_args()
     for query in args.query:
         url = build_url(args, query, 1)
-        romlist = get_rom_list(url)
+        romlist = get_rom_list(url, args)
         if romlist is None:
             if not args.console:
                 print('Sorry, No ROMs Found with \'{}\' keyword :('.format(query))
@@ -149,7 +162,7 @@ def main():
                 page = page.split('p')[1]
                 if int(page) <= int(romlist[0]['last_page']) and int(page) >= 1:
                     url = build_url(args, query, page)
-                    romlist = get_rom_list(url)
+                    romlist = get_rom_list(url, args)
                     if romlist is None:
                         if not args.console:
                             print('Sorry, No ROMs Found with \'{}\' keyword :('.format(query))
@@ -170,4 +183,5 @@ def main():
         download_and_extract(link, args, romlist[int(page)])
 
 
-main()
+if __name__ == "__main__":
+    main()

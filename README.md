@@ -1,7 +1,7 @@
 # retrolover
-Command-line simple Loveroms.com ROM automatic downloader
+Command-line simple ROM automatic downloader for your retropie
 
-## Disclaimer: Loveroms has been shut down so that this tool does not work anymore 
+### source has been changed to the romsmania so that tool is working again
 
 install:
 
@@ -33,4 +33,3 @@ optional arguments:
 
 TODO:
 - add more consoles
-- add ddos cloudflare check bypass
