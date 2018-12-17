@@ -1,6 +1,8 @@
 # retrolover
 Command-line simple ROM automatic downloader for your retropie
 
+After downloading it's automatically extracts zip archive to your roms folder
+
 ### source has been changed to the romsmania so that tool is working again
 
 install:
